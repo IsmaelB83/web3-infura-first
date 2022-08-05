@@ -15,25 +15,31 @@ const ETH_USD_RATE = 1669.06
 
 // Connection trough infura to mainnet
 let url = `https://:${process.env.INFURA_SECRET}@${ETH_NETWORKS.MAINNET}.infura.io/v3/${process.env.INFURA_API_KEY}`;
-console.log(url)
 let web3 = new Web3(new Web3.providers.HttpProvider(url));
 web3.eth.getBalance(MAINNET_ACCOUNT)
 .then(bal => {
+
     const ethBal = Web3Utils.fromWei(bal)
     const dollarUSLocale = Intl.NumberFormat('es-ES');
     const balUSD = ethBal * ETH_USD_RATE;
+    let txNum = 0;
 
-    console.log(`MAINNET ACCOUNT BALANCE ${MAINNET_ACCOUNT} -->
-                    Balance in wei ${bal}
-                    Balance in eth ${ethBal}
-                    Balance in $ ${dollarUSLocale.format(balUSD)}
-                `);
+    web3.eth.getTransactionCount(MAINNET_ACCOUNT)
+    .then(tx => txNum = tx)
+    .catch(error => console.log(error))
+    .finally(
+        console.log(`MAINNET ACCOUNT BALANCE ${MAINNET_ACCOUNT} -->
+                        Balance in wei ${bal}
+                        Balance in eth ${ethBal}
+                        Balance in $ ${dollarUSLocale.format(balUSD)}
+                        Number of transactions: ${txNum}
+        `)
+    );
 })
 .catch(error => console.log(error));
 
 // Connection trough infura to Ropsten
 url = `https://:${process.env.INFURA_SECRET}@${ETH_NETWORKS.ROPSTEN}.infura.io/v3/${process.env.INFURA_API_KEY}`;
-console.log(url)
 web3 = new Web3(new Web3.providers.HttpProvider(url));
 web3.eth.getTransaction(ROPSTEN_TXID)
 .then(tx => {
@@ -48,7 +54,7 @@ web3.eth.getTransaction(ROPSTEN_TXID)
 // Connection trough infura to ganache
 url = `HTTP://127.0.0.1:7545`;
 web3 = new Web3(new Web3.providers.HttpProvider(url));
-web3.eth.getBalance("0xA1DaF7EBea3d67626F020c8F95828506C4073235")
+web3.eth.getBalance("0x908936c272110bA81603152832394a1449b4f884")
 .then(bal => {
     const ethBal = Web3Utils.fromWei(bal)
     const dollarUSLocale = Intl.NumberFormat('es-ES');
